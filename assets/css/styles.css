@@ -207,6 +207,10 @@ img {
   right: 0;
 }
 
+.general {
+  position: relative;
+}
+
 /*===== HOME =====*/
 .home {
   position: relative;
