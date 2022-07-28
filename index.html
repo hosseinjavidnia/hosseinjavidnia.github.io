@@ -10,9 +10,12 @@
         <link rel="stylesheet" href="assets/css/styles.css">
         <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
 
-        <!-- =====BOX ICONS===== -->
         <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
         <title>Hossein Javidnia</title>
     </head>
@@ -273,21 +276,31 @@
             <section class="work section" id="publications">
                 <h2 class="section-title">Publications</h2>
 
-                <div class="contact__container bd-grid">
+                <div class="general bd-grid">
 
                     <div>                    
                         <p class="about__text">
-                        <p style="color:#4472ec; font-size:16px"><b>PhD Thesis</b></p>
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#thesis">PhD Thesis</button>
+                        <!--<p style="color:#4472ec; font-size:16px"><b>PhD Thesis</b></p>-->
+                        <div id="thesis" class="collapse">
                         <ul class="ulmine">
                             <li><a href="https://aran.library.nuigalway.ie/handle/10379/7398" target="_blank" class="apub">Contributions to the measurement of depth in consumer imaging</a></li>
                         </ul>
-                        <p style="color:#4472ec; font-size:16px"><b>Patents</b></p>
-                        <ul class="ulmine">
-                            <li><b>Javidnia, Hossein</b>, and Peter Corcoran. "Systems and methods for estimating and refining depth maps." U.S. Patent No. 10,462,445. 29 Oct. 2019 [<a href="https://patents.google.com/patent/US10462445B2/en" target="_blank" class="apub">Details</a>]</li><br>
-                            <li><b>Javidnia, Hossein</b>, and Peter Corcoran. "Systems and methods for providing depth map information." U.S. Patent No. 10,839,535. 17 Nov. 2020 [<a href="https://patents.google.com/patent/US10839535B2/en" target="_blank" class="apub">Details</a>]</li>
-                        </ul>
-                    
-                        <p style="color:#4472ec; font-size:16px"><b>Journals</b></p>
+                    </div><br>
+
+                    <p class="about__text">
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#patent">Patents</button>
+                        <div id="patent" class="collapse">
+                            <ul class="ulmine">
+                                <li><b>Javidnia, Hossein</b>, and Peter Corcoran. "Systems and methods for estimating and refining depth maps." U.S. Patent No. 10,462,445. 29 Oct. 2019 [<a href="https://patents.google.com/patent/US10462445B2/en" target="_blank" class="apub">Details</a>]</li><br>
+                                <li><b>Javidnia, Hossein</b>, and Peter Corcoran. "Systems and methods for providing depth map information." U.S. Patent No. 10,839,535. 17 Nov. 2020 [<a href="https://patents.google.com/patent/US10839535B2/en" target="_blank" class="apub">Details</a>]</li>
+                            </ul>
+                        </div><br>
+
+                        <p class="about__text">
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#journal">Journals</button>
+                        <!--<p style="color:#4472ec; font-size:16px"><b>Journals</b></p>-->
+                        <div id="journal" class="collapse">
                         <ul class="ulmine">
                             <li>Mohanty, Anwesha; Sutherland, Alistair; Bezbradica, Marija; <b>Javidnia, Hossein</b> (2022). "Skin Disease Analysis With Limited Data in Particular Rosacea: A Review and Recommended Framework." Ieee Access [</span><a href="http://dx.doi.org/10.1109/ACCESS.2022.3165574" target="_blank" rel="noreferrer noopener">DOI</a></span></span>]</span></p>
                             </li><br>
@@ -352,8 +365,12 @@
                             Bazrafkan, Shabab; <b>Javidnia, Hossein</b>; Corcoran, Peter (2018). "Face synthesis with landmark points from generative adversarial networks and inverse latent space mapping." arXiv preprint arXiv:1802.00390 [</span><a href="https://arxiv.org/abs/1802.00390" target="_blank" rel="noreferrer noopener">Details</a></span></span>]</span></span></p>
                             </li>
                             </ul>
+                        </div><br>
 
-                        <p style="color:#4472ec; font-size:16px"><b>Conferences</b></p>
+                        <p class="about__text">
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#conference">Conferences</button>
+                        <!--<p style="color:#4472ec; font-size:16px"><b>Conferences</b></p>-->
+                        <div id="conference" class="collapse">
                                                         
                             <ul class="ulmine">
                             <li>
@@ -401,6 +418,7 @@
                             <li>
                             <b>Javidnia, Hossein</b>; Ungureanu, Adrian; Corcoran, Peter (2015). "Palm-print recognition for authentication on smartphones." IEEE International Symposium on Technology and Society (ISTAS) [<a href="http://dx.doi.org/10.1109/ISTAS.2015.7439441" target="_blank">DOI</a></span></span>]</span></p>
                             </li>
+                        </div>
                     </div>
                 </div>
             </section>
