@@ -285,6 +285,7 @@ img {
 
 .about__subtitle {
   margin-bottom: var(--mb-2);
+  font-size: 21px;
 }
 
 .about__img {
