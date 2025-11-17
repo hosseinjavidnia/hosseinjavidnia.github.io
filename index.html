@@ -1,143 +1,332 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My Custom Python 3 Interpreter</title>
-    
-    <script src="https://skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
-    <script src="https://skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
-    
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 20px;
-        }
-        h3 {
-            text-align: center;
-            color: #333;
-        }
-        .playground-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            background: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-        .editor-area, .output-area {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-        }
-        #my-code {
-            height: 300px;
-            box-sizing: border-box; 
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 14px;
-            resize: vertical;
-        }
-        #run-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin-top: 10px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        #run-button:hover {
-            background-color: #0056b3;
-        }
-        #my-output {
-            height: 300px;
-            background-color: #1e1e1e;
-            color: #d4d4d4;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 10px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 14px;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        label {
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 5px;
-        }
-    </style>
+  <meta charset="utf-8" />
+  <title>Python 3 Playground — Skulpt</title>
+
+  <!-- Skulpt -->
+  <script src="https://skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
+  <script src="https://skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --brand: #2563eb;
+      --brand-600: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin: 0;
+      padding: 32px 20px 56px;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header{
+      margin-bottom: 20px;
+    }
+    .eyebrow{
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    h1{
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      font-size: clamp(24px, 3.2vw, 36px);
+    }
+    .lead{
+      color: var(--muted);
+      max-width: 70ch;
+      margin: 0;
+    }
+
+    /* Card */
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.06);
+      overflow: hidden;
+    }
+    .card-head{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff, #fafafa);
+    }
+    .card-title{
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .toolbar{
+      display: flex;
+      gap: 8px;
+    }
+    .btn{
+      appearance: none;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      padding: 8px 12px;
+      font: inherit;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform .02s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{ background: #f8fafc; }
+    .btn:active{ transform: translateY(1px); }
+    .btn-primary{
+      background: var(--brand);
+      color: #fff;
+      border-color: transparent;
+    }
+    .btn-primary:hover{ background: var(--brand-600); }
+
+    .card-body{
+      padding: 16px;
+    }
+
+    /* Playground layout */
+    .playground{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+      /* If the viewport is too narrow, allow horizontal scroll to keep fixed sizes */
+      overflow-x: auto;
+    }
+
+    .pane{
+      display: flex;
+      flex-direction: column;
+      min-width: 560px; /* fixed width pane */
+      max-width: 560px; /* fixed width pane */
+    }
+    .pane label{
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      margin: 0 0 8px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* Fixed-size editor and output */
+    #my-code{
+      width: 100%;
+      height: 340px;           /* fixed height */
+      resize: none;            /* prevent resizing */
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 12px 10px 12px;
+      font: 14px/1.5 var(--mono);
+      background: #0b1020;
+      color: #e5e7eb;
+      outline: none;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
+    }
+    #my-code:focus{
+      box-shadow: 0 0 0 3px rgba(37,99,235,.2);
+    }
+
+    #my-output{
+      width: 100%;
+      height: 340px;           /* fixed height */
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font: 14px/1.5 var(--mono);
+      background: #0d0f14;
+      color: #d4d4d4;
+      overflow: auto;          /* scroll if long */
+      white-space: pre-wrap;
+    }
+
+    .status{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      background: #fbfbfc;
+    }
+    .dot{
+      width: 9px; height: 9px; border-radius: 99px; background: var(--muted);
+    }
+    .dot.ok{ background: var(--success); }
+    .dot.err{ background: var(--danger); }
+
+    /* Footer random text block */
+    .foot{
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 15px;
+      background: #ffffffaa;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    /* Small screens: stack vertically while preserving fixed panes via horizontal scroll */
+    @media (max-width: 1200px){
+      .playground{ grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <span class="eyebrow">Interactive</span>
+      <h1>Python 3 Playground (Skulpt)</h1>
+      <!-- Random intro text (as requested) -->
+      <p class="lead">
+        Wisped horizons drift beyond the keyboard: nebulous thoughts, half-formed ideas,
+        and curious algorithms waiting for a spark. Here’s a canvas for tiny experiments,
+        delightful mishaps, and the occasional “aha!” that arrives out of nowhere.
+      </p>
+    </header>
 
-    <h3>My Custom Skulpt UI (Now with Python 3!)</h3>
+    <section class="card" aria-label="Python playground">
+      <div class="card-head">
+        <div class="card-title">Editor & Output</div>
+        <div class="toolbar" role="group" aria-label="Controls">
+          <button class="btn btn-primary" id="run-button" onclick="runCode()">Run ▸</button>
+          <button class="btn" onclick="clearOutput()">Clear Output</button>
+          <button class="btn" onclick="resetCode()">Reset Code</button>
+        </div>
+      </div>
 
-    <div class="playground-container">
-        
-        <div class="editor-area">
-            <label for="my-code">Python Code:</label>
-            <textarea id="my-code">
-# This is now a Python 3 interpreter!
-# f-strings and other new features will work.
+      <div class="card-body">
+        <div class="playground">
+          <div class="pane">
+            <label for="my-code">Python Code</label>
+            <textarea id="my-code" spellcheck="false"></textarea>
+          </div>
+
+          <div class="pane">
+            <label for="my-output">Output</label>
+            <pre id="my-output" aria-live="polite"></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="status" id="status">
+        <span class="dot" id="status-dot" aria-hidden="true"></span>
+        <span id="status-text">Idle</span>
+      </div>
+    </section>
+
+    <!-- Another random text block (as requested) -->
+    <p class="foot">
+      Somewhere between syntax and semantics, a small procession of pixels hums along:
+      whispers of recursion, glimmers of state, and the soft shuffle of data frames
+      lining up for their turn. Try things. Break things. Then make something unexpectedly lovely.
+    </p>
+  </div>
+
+  <script type="text/javascript">
+    // Default sample code (Python 3)
+    const defaultCode = `# Welcome to the Python 3 Playground (Skulpt)
+# Try editing this code and click "Run ▸".
+# You can print, define functions, use loops, and more.
 
 print("Hello, World!")
 
 a = 5
 b = 7
-print(f"5 + 7 = {a + b}")
-            </textarea>
-            <button id="run-button" onclick="runCode()">Run Code</button>
-        </div>
+print(f"{a} + {b} = {a + b}")
 
-        <div class="output-area">
-            <label for="my-output">Output:</label>
-            <pre id="my-output"></pre>
-        </div>
-        
-    </div>
+def fib(n):
+    seq = [0, 1]
+    for _ in range(n-2):
+        seq.append(seq[-1] + seq[-2])
+    return seq[:n]
 
-    <script type="text/javascript">
-        function runCode() {
-            var code = document.getElementById("my-code").value;
-            var outputEl = document.getElementById("my-output");
-            
-            outputEl.innerHTML = ''; 
-            Sk.pre = "my-output";
-            
-            // --- THIS IS THE NEW LINE ---
-            // Tell Skulpt to use Python 3 mode
-            Sk.configure({
-                __future__: Sk.python3,
-                output: (text) => {
-                    outputEl.innerHTML = outputEl.innerHTML + text;
-                },
-                read: (filename) => {
-                    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][filename] === undefined) {
-                        throw "File not found: '" + filename + "'";
-                    }
-                    return Sk.builtinFiles["files"][filename];
-                }
-            });
-            // -----------------------------
-            
-            var myPromise = Sk.misceval.asyncToPromise(() => {
-                return Sk.importMainWithBody("<stdin>", false, code, true);
-            });
-            
-            myPromise.then(
-                (mod) => { console.log('Skulpt run complete.'); },
-                (err) => {
-                    outputEl.innerHTML = outputEl.innerHTML + '<span style="color: #ff5555;">' + err.toString() + '</span>';
-                }
-            );
-        }
-    </script>
+print("First 10 Fibonacci numbers:", fib(10))`;
 
+    // Initialize editor content
+    const codeEl   = document.getElementById('my-code');
+    const outEl    = document.getElementById('my-output');
+    const statusEl = document.getElementById('status-text');
+    const dotEl    = document.getElementById('status-dot');
+    codeEl.value = defaultCode;
+
+    function setStatus(text, kind = 'idle'){
+      statusEl.textContent = text;
+      dotEl.classList.remove('ok','err');
+      if (kind === 'ok') dotEl.classList.add('ok');
+      else if (kind === 'err') dotEl.classList.add('err');
+    }
+
+    function clearOutput(){
+      outEl.textContent = '';
+      setStatus('Output cleared');
+    }
+
+    function resetCode(){
+      codeEl.value = defaultCode;
+      setStatus('Code reset to default');
+    }
+
+    function builtinRead(filename){
+      if (Sk.builtinFiles === undefined || Sk.builtinFiles['files'][filename] === undefined) {
+        throw "File not found: '" + filename + "'";
+      }
+      return Sk.builtinFiles['files'][filename];
+    }
+
+    async function runCode(){
+      const code = codeEl.value;
+      outEl.textContent = '';
+      setStatus('Running…');
+      dotEl.classList.remove('ok','err');
+
+      Sk.pre = "my-output";
+      Sk.configure({
+        __future__: Sk.python3,   // Python 3 mode
+        output: (text) => { outEl.textContent += text; },
+        read: builtinRead
+      });
+
+      try{
+        await Sk.misceval.asyncToPromise(() =>
+          Sk.importMainWithBody("<stdin>", false, code, true)
+        );
+        setStatus('Completed successfully', 'ok');
+      }catch(err){
+        // Show errors in output and status
+        outEl.innerHTML += '\n<span style="color:#ff6b6b;">' + (err?.toString ? err.toString() : err) + '</span>';
+        setStatus('Execution error', 'err');
+      }
+    }
+  </script>
 </body>
 </html>
