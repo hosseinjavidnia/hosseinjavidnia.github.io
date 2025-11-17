@@ -20,7 +20,7 @@
 
         /* Main container for the playground */
         .playground-container {
-            display: flex;
+            display: flex; /* This creates the side-by-side layout */
             justify-content: center;
             gap: 20px; /* Space between editor and output */
             background: #ffffff;
@@ -29,19 +29,18 @@
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-
-        /* Container for editor and button */
-        .editor-area {
+        
+        /* Both columns will take up equal space */
+        .editor-area, .output-area {
+            width: 50%; /* Each column gets half the width */
             display: flex;
-            flex-direction: column;
-            width: 50%;
+            flex-direction: column; /* Stacks label/editor/button vertically */
         }
 
         /* The code editor */
         #my-code {
-            width: 100%;
-            height: 250px;
-            box-sizing: border-box; /* Fixes padding issues */
+            height: 300px; /* Set a fixed height */
+            box-sizing: border-box; 
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
@@ -69,8 +68,7 @@
 
         /* The output area */
         #my-output {
-            width: 50%;
-            height: 284px; /* Match editor + button height */
+            height: 300px; /* **Set to the SAME height as the editor** */
             background-color: #1e1e1e; /* Dark background */
             color: #d4d4d4; /* Light text */
             border: 1px solid #ccc;
@@ -81,6 +79,12 @@
             overflow-y: auto; /* Add scrollbar if output is long */
             box-sizing: border-box;
         }
+        
+        label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -90,19 +94,23 @@
     <div class="playground-container">
         
         <div class="editor-area">
-            <label for="my-code"><b>Python Code:</b></label>
+            <label for="my-code">Python Code:</label>
             <textarea id="my-code">
-# This is a live Python interpreter!
+# This is a live Python 2 interpreter!
 # Type your code and press "Run"
 
 print("Hello, World!")
-print(f"5 + 7 = {5 + 7}")
+
+# This is the Python 2 way to do string formatting
+a = 5
+b = 7
+print("5 + 7 = " + str(a + b))
             </textarea>
             <button id="run-button" onclick="runCode()">Run Code</button>
         </div>
 
-        <div>
-            <label><b>Output:</b></label>
+        <div class="output-area">
+            <label for="my-output">Output:</label>
             <pre id="my-output"></pre>
         </div>
         
