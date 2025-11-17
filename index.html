@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Custom Python Interpreter</title>
+    <title>My Custom Python 3 Interpreter</title>
     
     <script src="https://skulpt.org/js/skulpt.min.js" type="text/javascript"></script>
     <script src="https://skulpt.org/js/skulpt-stdlib.js" type="text/javascript"></script>
@@ -12,34 +12,27 @@
             background-color: #f4f4f9;
             margin: 20px;
         }
-
         h3 {
             text-align: center;
             color: #333;
         }
-
-        /* Main container for the playground */
         .playground-container {
-            display: flex; /* This creates the side-by-side layout */
+            display: flex;
             justify-content: center;
-            gap: 20px; /* Space between editor and output */
+            gap: 20px;
             background: #ffffff;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        
-        /* Both columns will take up equal space */
         .editor-area, .output-area {
-            width: 50%; /* Each column gets half the width */
+            width: 50%;
             display: flex;
-            flex-direction: column; /* Stacks label/editor/button vertically */
+            flex-direction: column;
         }
-
-        /* The code editor */
         #my-code {
-            height: 300px; /* Set a fixed height */
+            height: 300px;
             box-sizing: border-box; 
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -48,8 +41,6 @@
             font-size: 14px;
             resize: vertical;
         }
-
-        /* The "Run" button */
         #run-button {
             background-color: #007bff;
             color: white;
@@ -61,25 +52,21 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-
         #run-button:hover {
             background-color: #0056b3;
         }
-
-        /* The output area */
         #my-output {
-            height: 300px; /* **Set to the SAME height as the editor** */
-            background-color: #1e1e1e; /* Dark background */
-            color: #d4d4d4; /* Light text */
+            height: 300px;
+            background-color: #1e1e1e;
+            color: #d4d4d4;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
             font-family: "Courier New", Courier, monospace;
             font-size: 14px;
-            overflow-y: auto; /* Add scrollbar if output is long */
+            overflow-y: auto;
             box-sizing: border-box;
         }
-        
         label {
             font-weight: bold;
             color: #555;
@@ -89,22 +76,21 @@
 </head>
 <body>
 
-    <h3>My Custom Skulpt UI</h3>
+    <h3>My Custom Skulpt UI (Now with Python 3!)</h3>
 
     <div class="playground-container">
         
         <div class="editor-area">
             <label for="my-code">Python Code:</label>
             <textarea id="my-code">
-# This is a live Python 2 interpreter!
-# Type your code and press "Run"
+# This is now a Python 3 interpreter!
+# f-strings and other new features will work.
 
 print("Hello, World!")
 
-# This is the Python 2 way to do string formatting
 a = 5
 b = 7
-print("5 + 7 = " + str(a + b))
+print(f"5 + 7 = {a + b}")
             </textarea>
             <button id="run-button" onclick="runCode()">Run Code</button>
         </div>
@@ -121,36 +107,32 @@ print("5 + 7 = " + str(a + b))
             var code = document.getElementById("my-code").value;
             var outputEl = document.getElementById("my-output");
             
-            outputEl.innerHTML = ''; // Clear previous output
+            outputEl.innerHTML = ''; 
+            Sk.pre = "my-output";
             
-            Sk.pre = "my-output"; // Tell Skulpt where to print
-            
-            // Configure the output function
+            // --- THIS IS THE NEW LINE ---
+            // Tell Skulpt to use Python 3 mode
             Sk.configure({
+                __future__: Sk.python3,
                 output: (text) => {
                     outputEl.innerHTML = outputEl.innerHTML + text;
                 },
                 read: (filename) => {
-                    // This is required for 'import' statements
                     if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][filename] === undefined) {
                         throw "File not found: '" + filename + "'";
                     }
                     return Sk.builtinFiles["files"][filename];
                 }
             });
+            // -----------------------------
             
-            // Run the code
             var myPromise = Sk.misceval.asyncToPromise(() => {
                 return Sk.importMainWithBody("<stdin>", false, code, true);
             });
             
             myPromise.then(
-                (mod) => {
-                    // Code ran successfully
-                    console.log('Skulpt run complete.');
-                },
+                (mod) => { console.log('Skulpt run complete.'); },
                 (err) => {
-                    // An error occurred
                     outputEl.innerHTML = outputEl.innerHTML + '<span style="color: #ff5555;">' + err.toString() + '</span>';
                 }
             );
