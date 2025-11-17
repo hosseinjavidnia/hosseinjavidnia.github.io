@@ -8,9 +8,9 @@
   <script src="https://skulpt.org/js/skulpt.min.js"></script>
   <script src="https://skulpt.org/js/skulpt-stdlib.js"></script>
 
-  <!-- CodeMirror 5 (PyCharm-like Darcula theme) -->
+  <!-- CodeMirror 5 (Light theme: Eclipse) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/darcula.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
@@ -20,7 +20,7 @@
     :root{
       --bg: #f6f7fb;
       --card: #ffffff;
-      --text: #222;
+      --text: #111827;
       --muted: #6b7280;
       --border: #e5e7eb;
       --brand: #2563eb;
@@ -28,11 +28,16 @@
       --success: #16a34a;
       --danger: #dc2626;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --pane-w: 560px;
-      --pane-h: 360px; /* single source of truth for both panes */
+
+      /* single source of truth for pane height */
+      --pane-h: 360px;
+      /* container width tuned to avoid horizontal scroll at default desktop widths */
+      --wrap-w: 1100px;
+      --gap: 16px;
     }
 
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body{
       margin: 0;
       padding: 32px 20px 56px;
@@ -41,14 +46,14 @@
       font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    .wrap{ max-width: 1100px; margin: 0 auto; }
+    .wrap{ max-width: var(--wrap-w); margin: 0 auto; }
     header{ margin-bottom: 20px; }
     .eyebrow{
       display: inline-block; font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
       color: var(--muted); font-weight: 700; margin-bottom: 8px;
     }
     h1{ margin: 0 0 8px; font-weight: 800; letter-spacing: -0.02em; font-size: clamp(24px, 3.2vw, 36px); }
-    .lead{ color: var(--muted); max-width: 70ch; margin: 0; }
+    .lead{ color: #4b5563; max-width: 70ch; margin: 0; }
 
     .card{
       background: var(--card); border: 1px solid var(--border); border-radius: 16px;
@@ -73,47 +78,46 @@
 
     .card-body{ padding: 16px; }
 
-    /* Perfectly aligned layout */
+    /* Perfect alignment, no default horizontal scroll */
     .playground{
       display: grid;
-      grid-template-columns: var(--pane-w) var(--pane-w);
-      gap: 16px;
-      align-items: start; /* both panes top-aligned */
-      overflow-x: auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* prevents content-defined overflow */
+      gap: var(--gap);
+      align-items: start;
     }
 
-    .pane{
-      width: var(--pane-w);
-    }
+    .pane{ min-width: 0; } /* allows children to shrink and avoid overflow */
 
     .pane label{
       display: block;
       font-size: 12px; font-weight: 700; color: var(--muted);
       margin: 0 0 8px; letter-spacing: .06em; text-transform: uppercase;
-      line-height: 1; height: 16px; /* equal label height to avoid nudge */
+      line-height: 1; height: 16px; /* equal label height keeps top edges aligned */
     }
 
-    /* Editor container and CodeMirror size locked to the same height */
+    /* Editor shell and output are locked to SAME HEIGHT */
     .editor-shell,
     #my-output{
       height: var(--pane-h);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      background: #0d0f14;
+      background: #ffffff;
     }
 
-    /* CodeMirror theme + sizing */
+    /* CodeMirror sizing + light theme look */
     .CodeMirror{
-      height: var(--pane-h);     /* lock editor height */
+      height: var(--pane-h);
+      width: 100%;
       font: 14px/1.5 var(--mono);
     }
 
-    /* Output styling */
+    /* Output styling (light) */
     #my-output{
       padding: 12px;
       font: 14px/1.5 var(--mono);
-      color: #d4d4d4;
+      color: #111827;
+      background: #fafafa;
       white-space: pre-wrap;
       overflow: auto;
     }
@@ -131,8 +135,8 @@
       padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
     }
 
-    @media (max-width: 1200px){
-      .playground{ grid-template-columns: var(--pane-w); }
+    @media (max-width: 900px){
+      .playground{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -191,7 +195,6 @@
   <script>
     const defaultCode = `# Welcome to the Python 3 Playground (Skulpt)
 # Try editing this code and click "Run ▸".
-# You can print, define functions, use loops, and more.
 
 print("Hello, World!")
 
@@ -207,7 +210,7 @@ def fib(n):
 
 print("First 10 Fibonacci numbers:", fib(10))`;
 
-    // Status helpers
+    // Elements
     const statusEl = document.getElementById('status-text');
     const dotEl    = document.getElementById('status-dot');
     const outEl    = document.getElementById('my-output');
@@ -227,10 +230,10 @@ print("First 10 Fibonacci numbers:", fib(10))`;
       setStatus('Code reset to default');
     }
 
-    // Initialize CodeMirror with Darcula (PyCharm-like)
+    // Initialize CodeMirror (LIGHT theme)
     const editor = CodeMirror.fromTextArea(document.getElementById('my-code'), {
       mode: 'python',
-      theme: 'darcula',
+      theme: 'eclipse',          // light theme
       lineNumbers: true,
       matchBrackets: true,
       indentUnit: 4,
@@ -238,8 +241,22 @@ print("First 10 Fibonacci numbers:", fib(10))`;
       indentWithTabs: false,
     });
     editor.setValue(defaultCode);
-    // Ensure the editor fills the fixed shell height
-    editor.setSize('100%', getComputedStyle(document.querySelector('.editor-shell')).height);
+
+    // Keep CodeMirror height exactly in sync with --pane-h
+    const paneH = getComputedStyle(document.documentElement).getPropertyValue('--pane-h').trim();
+    editor.setSize('100%', paneH);
+    window.addEventListener('load', () => editor.refresh());
+    window.addEventListener('resize', () => editor.refresh());
+
+    // Sanitize code to avoid "bad input" from invisible/smart characters
+    function sanitizeCode(src){
+      return src
+        .replace(/\r\n?/g, '\n')        // normalize line endings
+        .replace(/\u00A0/g, ' ')        // NBSP -> space
+        .replace(/[“”]/g, '"')          // smart double quotes
+        .replace(/[‘’]/g, "'")          // smart single quotes
+        .replace(/\t/g, '    ');        // tabs -> spaces
+    }
 
     function builtinRead(filename){
       if (Sk.builtinFiles === undefined || Sk.builtinFiles['files'][filename] === undefined) {
@@ -248,8 +265,22 @@ print("First 10 Fibonacci numbers:", fib(10))`;
       return Sk.builtinFiles['files'][filename];
     }
 
+    // Extract a nicer error message (better than generic "bad input")
+    function prettyError(err){
+      try{
+        // Skulpt sometimes exposes a Python-style traceback string
+        if (typeof err === 'string') return err;
+        if (err && err.toString) return err.toString();
+        return JSON.stringify(err);
+      }catch(_){
+        return 'Unknown error';
+      }
+    }
+
     async function runCode(){
-      const code = editor.getValue();
+      const raw = editor.getValue();
+      const code = sanitizeCode(raw);
+
       outEl.textContent = '';
       setStatus('Running…');
       Sk.pre = "my-output";
@@ -265,16 +296,26 @@ print("First 10 Fibonacci numbers:", fib(10))`;
         );
         setStatus('Completed successfully', 'ok');
       }catch(err){
-        outEl.innerHTML += '\n<span style="color:#ff6b6b;">' +
-          (err?.toString ? err.toString() : err) + '</span>';
+        const msg = prettyError(err);
+        // highlight the reported line number if present
+        const m = msg.match(/line\s+(\d+)/i);
+        if (m) {
+          const n = Number(m[1]) - 1;
+          if (!isNaN(n)) {
+            editor.addLineClass(n, 'background', 'cm-error-line');
+            setTimeout(() => editor.removeLineClass(n, 'background', 'cm-error-line'), 2500);
+          }
+        }
+        outEl.innerHTML += (outEl.textContent ? '\n' : '') +
+          '<span style="color:#b91c1c;">' + msg + '</span>';
         setStatus('Execution error', 'err');
       }
     }
 
-    // Keep CodeMirror sized correctly if fonts load later
-    window.addEventListener('load', () => {
-      editor.refresh();
-    });
+    // simple inline style for temporary line highlight
+    const style = document.createElement('style');
+    style.textContent = `.cm-error-line { background: rgba(220, 38, 38, .10); }`;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
